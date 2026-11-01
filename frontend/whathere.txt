@@ -1,0 +1,1 @@
+Front end pages to be made, Home, Login, Register 
