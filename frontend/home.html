@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Beginner Botany</title>
+    <link rel="stylesheet" href="home.css" />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1>Beginner Botany</h1>
+      <nav class="site-nav">
+        <a href="#weather">Weather</a>
+        <a href="#about">About Us</a>
+        <a href="#login">Login</a>
+      </nav>
+    </header>
+    <main class="main-container">
+      <div class="containerL">
+        <!-- Section 1: Featured Growth  -->
+        <section class="card featured-section">
+          <h2>Featured Growth</h2>
+          <div class="carousel">
+            <!-- Slide Container -->
+            <div class="carousel-slides">
+              <div class="slide active">
+                <img src="https://picsum.photos/id/106/600/400" alt="Plant 1" />
+                <div class="slide-caption">Monstera Deliciosa</div>
+              </div>
+              <div class="slide">
+                <img
+                  src="https://ladyleeshome.com/wp-content/uploads/2020/01/how-to-support-tomato-plants-3.jpg"
+                  alt="Plant 2"
+                />
+                <div class="slide-caption">My Tomato Plant's New Supports!</div>
+              </div>
+              <div class="slide">
+                <img
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdUs738qIlOuNEFIi1o81_1B8aOJgmrTD1ekJmUeevRw&s=10"
+                  alt="Plant 3"
+                />
+                <div class="slide-caption">Sun Flower Progress</div>
+              </div>
+              <div class="slide">
+                <img src="https://picsum.photos/id/360/600/400" alt="Plant 4" />
+                <div class="slide-caption">Pothos</div>
+              </div>
+              <div class="slide">
+                <img
+                  src="https://cdn.mos.cms.futurecdn.net/v2/t:0,l:350,cw:900,ch:900,q:80,w:900/Vi7uHzJgpVQH9JkCQU5rMR.jpg"
+                  alt="Plant 5"
+                />
+                <div class="slide-caption">Lily of the Valley Blooming</div>
+              </div>
+            </div>
+
+            <!-- Bottom Arrow Navigation GUI -->
+            <div class="carousel-nav">
+              <button class="nav-btn" id="prevBtn" aria-label="Previous Slide">
+                &#10094;
+              </button>
+              <div class="carousel-dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </div>
+              <button class="nav-btn" id="nextBtn" aria-label="Next Slide">
+                &#10095;
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 3: Plant Search Bar -->
+        <section class="card search-section">
+          <h2>Plant Search</h2>
+          <div class="search-box">
+            <input type="text" placeholder="Search for plants..." />
+            <button class="btn btn-secondary">Search</button>
+          </div>
+        </section>
+      </div>
+      <!-- Section 4: Article Section -->
+
+      <!-- User Box -->
+      <div class="containerR">
+        <section class="card profile-section">
+          <div class="profile-card">
+            <div class="avatar-placeholder"></div>
+            <div class="user-info">
+              <h3>Username</h3>
+              <p><strong>Home State:</strong> place holder</p>
+            </div>
+            <button class="btn" id="blogbtn">Personal Blog Page</button>
+          </div>
+        </section>
+
+        <section class="card article-section">
+          <h2>Articles</h2>
+          <div class="article-list">
+            <div class="article-card">
+              <h3>Soil and PH for Beginngers!</h3>
+              <p>Types of Soils and how PH affects plant growth.</p>
+            </div>
+            <div class="article-card">
+              <h3>Plant Growth from Seed to Mature</h3>
+              <p>
+                Walk through the steps to grow a plant from seed to maturity
+              </p>
+            </div>
+            <div class="article-card">
+              <h3>
+                Sun and Weather and What do they spell for your plants Growth!
+              </h3>
+              <p>
+                The way weather and sun exposure can affect your plants growth
+                and health.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="home.js"></script>
+  </body>
+</html>

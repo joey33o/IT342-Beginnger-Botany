@@ -1,1 +1,8 @@
 Front end pages to be made, Home, Login, Register 
+
+Home.html has the cards for: 
+
+Featured Growth - 5 slides/picture each later link to BE database
+Username - currently no image and home state that need ot be linked to DB 
+Articles - in the future will be made and having link to them 
+Plant search - need databse for full use
