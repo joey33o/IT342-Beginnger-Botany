@@ -1,0 +1,63 @@
+/* ===== LOGIN + REGISTER PAGES: both share this white-card-in-the-middle look ===== */
+
+/* Light green page with two soft glows, so it doesn't feel flat behind the card. */
+.auth-bg {
+    background:
+        radial-gradient(circle at 15% 20%, rgba(82, 183, 136, 0.25), transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(45, 106, 79, 0.20), transparent 45%),
+        var(--verdant-50);
+}
+
+/* The white card holding the form: max 440px wide, green stripe on top, rounded corners. */
+.auth-card {
+    --bs-card-bg: #ffffff;
+    max-width: 440px;
+    border: none;
+    border-top: 6px solid var(--verdant-600);
+    border-radius: 1rem;
+}
+
+/* The light green circle with an emoji above each title. */
+.auth-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;          /* turns the square into a circle */
+    background-color: var(--verdant-100);
+    font-size: 2rem;
+    display: flex;               /* these three lines center the emoji */
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.75rem;      /* centers the circle with a bit of space below */
+}
+
+/* Card titles in our darkest green. */
+.auth-card h1 {
+    color: var(--verdant-900);
+}
+
+/* The email code box: big, centered, spaced-out numbers that are easy to read. */
+.code-input {
+    font-size: 1.6rem;
+    letter-spacing: 0.6rem;
+    text-align: center;
+}
+
+/* Password checklist: grey with an empty circle until register.js marks a rule "met". */
+.password-rules li {
+    color: #6c757d;
+}
+
+/* A met rule turns green. */
+.password-rules li.met {
+    color: var(--verdant-600);
+}
+
+/* The empty circle in front of each rule... */
+.password-rules li::before {
+    content: "○ ";
+}
+
+/* ...becomes a check mark once the rule is met. */
+.password-rules li.met::before {
+    content: "✓ ";
+}

@@ -1,0 +1,110 @@
+/* ===== SITE-WIDE GREEN THEME: loaded right after Bootstrap on every page to swap its blue for our greens ===== */
+
+/* Our colors, named once and reused everywhere (higher number = darker green). */
+:root {
+    --verdant-900: #1b4332;   /* darkest: menu bar, footer, headings */
+    --verdant-800: #245a3e;
+    --verdant-700: #2d6a4f;   /* main color: buttons, links */
+    --verdant-600: #40916c;
+    --verdant-400: #52b788;
+    --verdant-200: #b7e4c7;
+    --verdant-100: #d8f3dc;
+    --verdant-50:  #f1f8f2;   /* lightest: page background */
+
+    /* Point Bootstrap's colors at our greens (the "-rgb" ones are the same colors as three numbers). */
+    --bs-primary: var(--verdant-700);
+    --bs-primary-rgb: 45, 106, 79;
+    --bs-success: var(--verdant-600);
+    --bs-success-rgb: 64, 145, 108;
+    --bs-link-color: var(--verdant-700);
+    --bs-link-color-rgb: 45, 106, 79;
+    --bs-link-hover-color: var(--verdant-900);
+    --bs-link-hover-color-rgb: 27, 67, 50;
+    --bs-body-bg: var(--verdant-50);
+    --bs-focus-ring-color: rgba(64, 145, 108, 0.3);
+}
+
+/* Keeps the footer at the bottom by letting <main> stretch to fill any leftover space. */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Green buttons: normal, hovered, being clicked, and greyed out. */
+.btn-primary {
+    --bs-btn-bg: var(--verdant-700);
+    --bs-btn-border-color: var(--verdant-700);
+    --bs-btn-hover-bg: var(--verdant-800);
+    --bs-btn-hover-border-color: var(--verdant-800);
+    --bs-btn-active-bg: var(--verdant-900);
+    --bs-btn-active-border-color: var(--verdant-900);
+    --bs-btn-disabled-bg: var(--verdant-600);
+    --bs-btn-disabled-border-color: var(--verdant-600);
+    --bs-btn-focus-shadow-rgb: 64, 145, 108;
+}
+
+/* Same idea for outlined buttons, like Show/Hide password. */
+.btn-outline-primary {
+    --bs-btn-color: var(--verdant-700);
+    --bs-btn-border-color: var(--verdant-700);
+    --bs-btn-hover-bg: var(--verdant-700);
+    --bs-btn-hover-border-color: var(--verdant-700);
+    --bs-btn-active-bg: var(--verdant-800);
+    --bs-btn-active-border-color: var(--verdant-800);
+    --bs-btn-focus-shadow-rgb: 64, 145, 108;
+}
+
+/* Typing boxes stay white (instead of picking up the page's green) and glow green when clicked into. */
+.form-control,
+.form-select {
+    background-color: #ffffff;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: #ffffff;
+    border-color: var(--verdant-400);
+    box-shadow: 0 0 0 0.25rem rgba(64, 145, 108, 0.25);
+}
+
+/* Dark green menu bar along the top. */
+.navbar-verdant {
+    background-color: var(--verdant-900);
+}
+
+/* The "Beginner Botany" name on the left of the menu. */
+.navbar-verdant .navbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+/* Highlights the menu link for the page you're on. */
+.navbar-verdant .nav-link.active {
+    color: var(--verdant-200) !important;
+    font-weight: 600;
+}
+
+/* Dark green footer. */
+.footer-verdant {
+    background-color: var(--verdant-900);
+    color: var(--verdant-100);
+}
+
+/* "Skip to main content" link: hidden until a keyboard user presses Tab, then pops up top-left. */
+.skip-link:focus {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 1100;            /* sit on top of everything else */
+    padding: 0.5rem 1rem;
+    background-color: #ffffff;
+    color: var(--verdant-900);
+    border: 2px solid var(--verdant-600);
+    border-radius: 0.5rem;
+    font-weight: 600;
+}

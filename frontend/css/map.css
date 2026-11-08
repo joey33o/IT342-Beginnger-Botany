@@ -1,0 +1,412 @@
+/* ===== WEATHER MAP PAGE: search bar, map + plant list, and the weather panel ===== */
+
+/* Page title in our darkest green. */
+.page-title {
+    color: var(--verdant-900);
+}
+
+/* Keeps the "Local zone" search bar from stretching across huge screens. */
+.zone-search {
+    max-width: 560px;
+}
+
+/* The pale green "Sample data" pill under the search bar. */
+.sample-badge {
+    background-color: var(--verdant-100);
+    color: var(--verdant-800);
+    font-weight: 600;
+}
+
+/* Turns red text on for search problems. */
+#searchStatus.error {
+    color: #b3261e;
+}
+
+
+/* ===== Shared look for the two big panels (Map and Weather) ===== */
+
+/* White panels with rounded corners, a soft shadow, and no grey border. */
+.panel {
+    --bs-card-bg: #ffffff;
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 0.25rem 1rem rgba(27, 67, 50, 0.08);
+}
+
+/* Dark green title strip across the top of each panel. */
+.panel-header {
+    background-color: var(--verdant-900);
+    color: #ffffff;
+    border-top-left-radius: 1rem !important;
+    border-top-right-radius: 1rem !important;
+}
+
+/* The location label in the Map panel's title strip. */
+.zone-chip {
+    font-size: 0.85rem;
+    color: var(--verdant-200);
+}
+
+
+/* ===== Map ===== */
+
+/* The street map fills the full height next to the plant panel, with rounded corners. */
+.map-art {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    border-radius: 0.75rem;
+    display: block;
+}
+
+/* Street and park names on the map. */
+.map-label text {
+    font-size: 11px;
+    fill: #6b7a70;
+    font-weight: 600;
+}
+
+
+/* ===== Plant panel ===== */
+
+/* Pale green box beside the map, like the tall panel in the sketch. */
+.plant-panel {
+    background-color: var(--verdant-50);
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+
+/* The list scrolls inside a fixed height, so a long list doesn't stretch the page. */
+.plant-list {
+    max-height: 340px;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--verdant-400) transparent;
+}
+
+/* Green outline when the list is reached by keyboard (arrow keys then scroll it). */
+.plant-list:focus-visible {
+    outline: 2px solid var(--verdant-600);
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+}
+
+/* Little gap between each plant. */
+.plant-list li + li {
+    margin-top: 0.4rem;
+}
+
+/* Each plant: white button with the emoji, then its name and type. */
+.plant-option {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    background-color: #ffffff;
+    border: 1px solid var(--verdant-200);
+    border-radius: 0.5rem;
+    color: var(--verdant-900);
+    text-align: left;
+}
+
+.plant-option:hover,
+.plant-option:focus-visible {
+    border-color: var(--verdant-600);
+    background-color: var(--verdant-100);
+}
+
+.plant-option-emoji {
+    font-size: 1.3rem;
+}
+
+/* Name on top and type underneath, stacked. */
+.plant-option-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.plant-option-name {
+    font-weight: 600;
+}
+
+.plant-option-type {
+    font-size: 0.75rem;
+    color: var(--verdant-700);
+}
+
+/* Plant details: big emoji at the top. */
+.plant-emoji {
+    font-size: 3rem;
+    line-height: 1.2;
+    display: block;
+}
+
+/* The pale green "Vegetable" / "Easy" tags. */
+.plant-tag {
+    background-color: var(--verdant-200);
+    color: var(--verdant-900);
+    font-weight: 600;
+}
+
+/* Sun / Water / Plant / Harvest: label on the left, answer on the right. */
+.plant-facts {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.4rem 0.75rem;
+}
+
+.plant-facts dt {
+    font-weight: 600;
+    color: var(--verdant-800);
+}
+
+.plant-facts dd {
+    margin: 0;
+}
+
+/* The tip at the bottom gets its own white box. */
+.plant-tip {
+    background-color: #ffffff;
+    border-left: 4px solid var(--verdant-400);
+    border-radius: 0.4rem;
+    padding: 0.5rem 0.75rem;
+}
+
+
+/* ===== Weather: °F / °C switch in the title strip ===== */
+
+/* The two unit buttons sit together like a small switch. */
+.unit-toggle {
+    display: flex;
+    border: 1px solid var(--verdant-400);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.unit-btn {
+    background: none;
+    border: none;
+    color: var(--verdant-200);
+    padding: 0.1rem 0.7rem;
+    font-size: 0.85rem;
+}
+
+/* The unit that's on turns solid. */
+.unit-btn[aria-pressed="true"] {
+    background-color: var(--verdant-200);
+    color: var(--verdant-900);
+    font-weight: 700;
+}
+
+
+/* ===== Weather: right now ===== */
+
+/* The big weather emoji. */
+.now-icon {
+    font-size: 3.5rem;
+    line-height: 1;
+}
+
+/* The big temperature number. */
+.now-temp {
+    font-size: 3.25rem;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--verdant-900);
+}
+
+/* Precipitation / humidity / wind / sunlight lines next to the temperature. */
+.now-details {
+    color: #555;
+    line-height: 1.35;
+}
+
+/* Day and condition on the right side. */
+.now-when strong {
+    color: var(--verdant-900);
+    font-size: 1.1rem;
+}
+
+
+/* ===== Weather: chart tabs ===== */
+
+/* Tabs look like plain words with a line between them. */
+.chart-tabs {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.chart-tab {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #555;
+    padding: 0.25rem 0.75rem;
+}
+
+.chart-tab + .chart-tab {
+    border-left: 1px solid #dee2e6;
+}
+
+/* The tab that's on gets a thick green underline, like the screenshot's yellow one. */
+.chart-tab[aria-pressed="true"] {
+    color: var(--verdant-900);
+    font-weight: 600;
+    border-bottom-color: var(--verdant-600);
+}
+
+
+/* ===== Weather: the chart ===== */
+
+/* On narrow screens the chart scrolls sideways instead of shrinking its text too small to read. */
+.chart-wrap {
+    overflow-x: auto;
+}
+
+.day-chart {
+    width: 100%;
+    min-width: 480px;
+    display: block;
+}
+
+/* Shaded area under the line. */
+.chart-area {
+    fill: var(--verdant-100);
+}
+
+/* The line itself. */
+.chart-line {
+    fill: none;
+    stroke: var(--verdant-600);
+    stroke-width: 3;
+    stroke-linejoin: round;
+}
+
+/* The numbers above each point. */
+.chart-value {
+    font-size: 14px;
+    font-weight: 600;
+    fill: var(--verdant-900);
+    text-anchor: middle;
+}
+
+/* The day names along the bottom. */
+.chart-time {
+    font-size: 13px;
+    fill: #6c757d;
+    text-anchor: middle;
+}
+
+
+/* The fainter dashed line for each day's low (Temperature tab only). */
+.chart-line-low {
+    fill: none;
+    stroke: var(--verdant-400);
+    stroke-width: 2;
+    stroke-dasharray: 6 5;
+}
+
+/* A dot on each day's point. */
+.chart-dot {
+    fill: #ffffff;
+    stroke: var(--verdant-600);
+    stroke-width: 2.5;
+}
+
+/* The day you picked gets a bigger, filled-in dot and a bold name. */
+.chart-dot.picked {
+    fill: var(--verdant-700);
+}
+
+.chart-time.picked {
+    fill: var(--verdant-900);
+    font-weight: 700;
+}
+
+
+/* ===== Weather: the 8-day row ===== */
+
+/* The days sit in one row that can scroll sideways, with its scrollbar hidden (the arrows do the scrolling). */
+.day-list {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+}
+
+.day-list::-webkit-scrollbar {
+    display: none;
+}
+
+/* Each day shares the row evenly but never gets narrower than 54px. */
+.day-list li {
+    flex: 1 0 54px;
+}
+
+/* The ‹ › buttons on each side of the row (hidden by map.js when all days fit). */
+.week-arrow {
+    background-color: var(--verdant-100);
+    color: var(--verdant-900);
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 0 0.6rem;
+    border: none;
+}
+
+.week-arrow:hover {
+    background-color: var(--verdant-200);
+}
+
+/* Faded when there's nothing more to scroll to. */
+.week-arrow:disabled {
+    opacity: 0.4;
+}
+
+/* Each day box: day name, icon, then high and low, stacked in the middle. */
+.day-btn {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.5rem 0.25rem;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 0.6rem;
+    color: var(--verdant-900);
+}
+
+.day-btn:hover {
+    background-color: var(--verdant-50);
+}
+
+/* The chosen day gets a soft green box, like the highlighted "Sat" in the screenshot. */
+.day-btn.selected {
+    background-color: var(--verdant-100);
+    border-color: var(--verdant-200);
+}
+
+.day-name {
+    font-weight: 600;
+}
+
+.day-icon {
+    font-size: 1.6rem;
+    line-height: 1.2;
+}
+
+.day-temps {
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+
+/* ===== Weather: garden tip under the days ===== */
+.garden-tip {
+    background-color: var(--verdant-50);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+}
