@@ -1,0 +1,260 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background-color: #f4f7f4;
+  color: #2d3748;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+/* Header */
+.site-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.site-header h1 {
+  color: #2e7d32;
+}
+.site-nav {
+  display: flex;
+  background-color: #2e7d32;
+  justify-content: center;
+  gap: 20px;
+  align-items: center;
+}
+.site-nav a {
+  text-decoration: none;
+  color: #9fc3b2;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 30px;
+  max-width: 95%;
+  width: 1440px;
+  margin: 0 auto;
+}
+/* Main Layout Grid/Flex */
+.containerR {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+  min-width: 300px;
+}
+
+.containerL {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+  min-width: 300px;
+}
+
+/* Shared Card Component */
+.card {
+  flex: 1 1 calc(50% - 15px);
+  min-height: unset;
+  min-width: 280px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Featured Section Custom Styling */
+.featured-section h2 {
+  color: #2e7d32;
+  margin-bottom: 16px;
+}
+
+/* Carousel/ Slideshow */
+.carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Where Img going to be displayed */
+.carousel-slides {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #e2e8f0;
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.slide.active {
+  opacity: 1;
+}
+
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slide-caption {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  color: #ffffff;
+  padding: 16px 12px 10px;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Bottom Navigation Controls */
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.nav-btn {
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.2s,
+    transform 0.1s;
+}
+
+.nav-btn:hover {
+  background-color: #1b5e20;
+  transform: scale(1.05);
+}
+
+.nav-btn:active {
+  transform: scale(0.95);
+}
+
+/* Navigation Indicator Dots */
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background-color: #cbd5e1;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dot.active {
+  background-color: #2e7d32;
+}
+
+/* User Profile Section */
+
+.profile-card {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.avatar-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #bbdefb;
+}
+
+.user-info h3 {
+  margin-bottom: 4px;
+}
+
+.user-info p {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+.blogbtn {
+  justify-content: space-between;
+}
+
+/* Form & Search Styling */
+.search-box {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+input[type="text"]:focus {
+  outline: 2px solid #4caf50;
+  border-color: transparent;
+}
+
+/* Buttons */
+.btn {
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.btn:hover {
+  background-color: #1b5e20;
+}
+
+.btn-secondary {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+.btn-secondary:hover {
+  background-color: #cbd5e1;
+}
