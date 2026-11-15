@@ -8,8 +8,8 @@ ProxyPassReverse /html/loginBACK.html http://192.168.62.10/loginBACK.php
 ProxyPass /html/checkSession.html http://192.168.62.10/checkSession.php
 ProxyPassReverse /html/checkSession.html http://192.168.62.10/checkSession.php
 
+ProxyPass /html/registerBACK.html http://192.168.62.10/registerBACK.php
+ProxyPassReverse /html/registerBACK.html http://192.168.62.10/registerBACK.php
 
-ProxyPass /register.php http://192.168.62.10/register.php
-ProxyPassReverse /register.php http://192.168.62.10/register.php
 
 </VirtualHost>

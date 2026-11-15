@@ -1,7 +1,7 @@
 // ===== REGISTER PAGE: checks every box, then sends the new account to our server =====
 
 // Our server's web address. Leave it empty for "demo mode", which pretends sign-up worked so we can test.
-const API_BASE = "";
+const API_BASE = "/";
 
 // Grab the page parts we'll use.
 const form = document.getElementById("registerForm");
@@ -122,7 +122,7 @@ form.addEventListener("submit", async (event) => {
     try {
         // Send it to the server (skipped in demo mode); 409 means "that already exists".
         if (API_BASE) {
-            const response = await fetch(API_BASE + "/auth/register", {
+            const response = await fetch(API_BASE + "html/registerBACK.html", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newUser)
