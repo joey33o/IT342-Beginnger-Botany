@@ -3,6 +3,9 @@
 //Get the connection file to connect to the databse
 require_once "connection.php";
 
+//Grab the raw data from the request body
+$rawInput = file_get_contents('php://input');
+
 //Set the session thing to start recording session variables from the client to php
 session_start();
 
@@ -10,8 +13,11 @@ session_start();
     //check for post request
     if ($_SERVER["REQUEST_METHOD"] == "POST" ){
 
-        $username = $_POST["username"];
-        $password = $_POST["password"];
+        $data = json_decode($rawInput, true, 512, JSON_THROW_ON_ERROR);
+
+        //assign variables off of the JSON
+        $username = $data["username"];
+        $password = $data["password"];
 
         //Get a proper array built for it
         $arrayOrigin = [
@@ -33,12 +39,22 @@ session_start();
         // header("Location: /html/map.php");
     }
     if ($databaseInfo){
+        //Store Session Variables
         $_SESSION["username"] = $databaseInfo["username"];
         $_SESSION["logged_in"] = true;
-        header("Location: /html/map.html");
+        //echo the JSON to the front end
+        echo json_encode([
+            "success" => true,
+            "message" => "Login successful",
+            "redirect" => "/html/map.html"
+                ]);
         exit();
     } else {
         $error = "Invalid Username or Password";
+        echo json_encode([
+            "success" => $error
+                ]);
+        exit();
     }
 
 

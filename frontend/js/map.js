@@ -1,3 +1,17 @@
+window.authReady.then(function (username) {
+
+    if (username) {
+
+        console.log("Logged in as: " + username);
+
+        // Example: display username somewhere else.
+        document.getElementById("mapUsername").textContent = username;
+
+    }
+
+});
+
+
 // ===== WEATHER MAP PAGE: sample data for now; the real weather and plant info come from our server later =====
 
 // Sample plants that grow well in Zone 7a; the plant service will supply this list later.

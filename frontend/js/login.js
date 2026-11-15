@@ -76,7 +76,7 @@ loginForm.addEventListener("submit", async (event) => {
     try {
         // Send the login to the server (skipped in demo mode); if it's right, the server emails the code.
         if (API_BASE) {
-            const response = await fetch(API_BASE + "/auth/login", {
+            const response = await fetch(API_BASE + "/html/loginBACK.html", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password })
@@ -84,11 +84,8 @@ loginForm.addEventListener("submit", async (event) => {
             // Same message for a wrong username or password, so nobody can tell which usernames exist.
             if (!response.ok) throw new Error("Wrong username or password.");
         }
-
-        // It worked: swap step 1 for step 2 and put the cursor in the code box.
-        loginForm.classList.add("d-none");
-        codeForm.classList.remove("d-none");
-        codeForm.code.focus();
+        
+        window.location.href = "/html/map.html";
     } catch (err) {
         showError(loginError, err.message || "Something went wrong. Please try again.");
     } finally {
@@ -97,45 +94,45 @@ loginForm.addEventListener("submit", async (event) => {
 });
 
 
-// ===== Step 2: the 6-digit email code =====
-const codeInput = document.getElementById("code");
+// // ===== Step 2: the 6-digit email code =====
+// const codeInput = document.getElementById("code");
 
-// Quietly removes anything that isn't a number as they type.
-codeInput.addEventListener("input", () => {
-    codeInput.value = codeInput.value.replace(/\D/g, "");
-});
+// // Quietly removes anything that isn't a number as they type.
+// codeInput.addEventListener("input", () => {
+//     codeInput.value = codeInput.value.replace(/\D/g, "");
+// });
 
-// Runs when "Verify" is clicked.
-codeForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    showError(codeError, "");
+// // Runs when "Verify" is clicked.
+// codeForm.addEventListener("submit", async (event) => {
+//     event.preventDefault();
+//     showError(codeError, "");
 
-    // The code has to be exactly 6 numbers.
-    const code = codeInput.value.trim();
-    const codeOk = /^\d{6}$/.test(code);
-    markField(codeInput, codeOk, "codeInvalid", "The code is 6 numbers.");
-    if (!codeOk) {
-        codeInput.focus();
-        return;
-    }
+//     // The code has to be exactly 6 numbers.
+//     const code = codeInput.value.trim();
+//     const codeOk = /^\d{6}$/.test(code);
+//     markField(codeInput, codeOk, "codeInvalid", "The code is 6 numbers.");
+//     if (!codeOk) {
+//         codeInput.focus();
+//         return;
+//     }
 
-    const button = document.getElementById("codeBtn");
-    setBusy(button, true, "Verifying...", "Verify");
+//     const button = document.getElementById("codeBtn");
+//     setBusy(button, true, "Verifying...", "Verify");
 
-    try {
-        // Ask the server if the code matches the one it emailed (skipped in demo mode).
-        if (API_BASE) {
-            const response = await fetch(API_BASE + "/auth/verify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: loginForm.username.value.trim(), code })
-            });
-            if (!response.ok) throw new Error("That code didn't work. Check your email and try again.");
-        }
+//     try {
+//         // Ask the server if the code matches the one it emailed (skipped in demo mode).
+//         if (API_BASE) {
+//             const response = await fetch(API_BASE + "/auth/verify", {
+//                 method: "POST",
+//                 headers: { "Content-Type": "application/json" },
+//                 body: JSON.stringify({ username: loginForm.username.value.trim(), code })
+//             });
+//             if (!response.ok) throw new Error("That code didn't work. Check your email and try again.");
+//         }
 
-        window.location.href = "index.html"; // code accepted: off to the home page
-    } catch (err) {
-        showError(codeError, err.message);
-        setBusy(button, false, "", "Verify");
-    }
-});
+//         window.location.href = "index.html"; // code accepted: off to the home page
+//     } catch (err) {
+//         showError(codeError, err.message);
+//         setBusy(button, false, "", "Verify");
+//     }
+// });

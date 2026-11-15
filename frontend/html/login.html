@@ -89,34 +89,6 @@
                     New to gardening? <a href="register.html" class="fw-semibold">Create an account</a>
                 </p>
             </form>
-
-            <!-- STEP 2: the 6-digit email code, hidden (d-none) until step 1 succeeds. -->
-            <form id="codeForm" class="card-body p-4 p-sm-5 d-none" novalidate aria-labelledby="codeTitle">
-                <header class="text-center mb-4">
-                    <span class="auth-icon" aria-hidden="true">📧</span>
-                    <h1 class="h3 fw-bold mb-1" id="codeTitle" tabindex="-1">Check your email</h1>
-                    <p class="text-muted mb-0" id="codeHelp">We sent a 6-digit code to the email on your account.</p>
-                </header>
-
-                <div class="mb-2">
-                    <label for="code" class="form-label fw-semibold">Verification code</label>
-                    <input type="text" class="form-control code-input" id="code" name="code"
-                           inputmode="numeric" autocomplete="one-time-code" maxlength="6" required
-                           aria-describedby="codeHelp codeInvalid">
-                    <p class="invalid-feedback mb-0" id="codeInvalid"></p>
-                </div>
-
-                <p class="alert alert-danger d-none mt-3 mb-0 py-2" id="codeError" role="alert"></p>
-
-                <button type="submit" class="btn btn-primary btn-lg w-100 mt-4" id="codeBtn">
-                    Verify
-                </button>
-
-                <p class="text-center mt-4 mb-0">
-                    <a href="login.html">Back to login</a>
-                </p>
-            </form>
-
         </section>
     </main>
 
