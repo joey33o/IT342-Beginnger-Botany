@@ -51,7 +51,6 @@ if (!isset($_SESSION["logged_in"])){
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="map.html">Weather Map</a></li>
                         <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
                         <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
-                        <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
                     </ul>
                 </div>
             </div>

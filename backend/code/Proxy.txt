@@ -1,0 +1,15 @@
+<VirtualHost *:80>
+
+ProxyPreserveHost On
+
+ProxyPass /html/login.html http://192.168.62.10/login.php
+ProxyPassReverse /html/login.html http://192.168.62.10/login.php
+
+ProxyPass /register.php http://192.168.62.10/register.php
+ProxyPassReverse /register.php http://192.168.62.10/register.php
+
+ProxyPass /html/map.html http://192.168.62.10/map.php
+ProxyPassreverse /html/map.html http://192.168.62.10/map.php
+
+</VirtualHost>
+
