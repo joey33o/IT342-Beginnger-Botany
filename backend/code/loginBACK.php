@@ -77,7 +77,7 @@ function attemptLogIn($pdo, $cleanJSON){
 
         //check if the database responded with something
         //ALSO check if password hash matches the hash on the database
-        if ($dbresponse && $cleanJSON["password"] === "qwerty"){
+        if ($dbresponse && password_verify($cleanJSON["password"], $dbresponse["password"])){
                 //the database responded and its valid return the data from DB
                 return $dbresponse;
         }
@@ -85,7 +85,6 @@ function attemptLogIn($pdo, $cleanJSON){
             error_log("DAtabase fucky qucky");
         }
 
-        //password_verify($arrayOrigin["password"], $dbresponse["password"])
 }
 
 //function for checking data validity

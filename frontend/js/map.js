@@ -5,9 +5,14 @@ window.authReady.then(function (username) {
         console.log("Logged in as: " + username);
 
         // Example: display username somewhere else.
-        document.getElementById("mapUsername").textContent = username;
+        document.getElementById("customName").textContent = username + "'s Local Garden Weather";
 
+    }else{
+        window.location.replace("/html/home.html");
     }
+
+    //we need to make it so that the home page is not accessable by people unless the user is logged in
+    //here is where we will also check if a variabele is set and decide which navbar should be used
 
 });
 

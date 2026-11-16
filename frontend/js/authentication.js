@@ -1,3 +1,8 @@
+/*
+    so now with this we are able to set up any global variables we want to have to make sure the page is personalized 
+    we need to add this to eery page and then have a sctipt per page that determines whch nvbar and whatnot should go there 
+*/
+
 // Global variable accessible to other JavaScript files.
 window.currentUser = null;
 
@@ -6,7 +11,7 @@ window.authReady = (async function () {
 
     try {
 
-        const response = await fetch("/html/check-session.html");
+        const response = await fetch("/html/checkSession.html");
 
         if (!response.ok) {
             return null;
