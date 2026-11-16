@@ -75,9 +75,6 @@ elseif($_SERVER["REQUEST_METHOD"] === "POST") {
 
         //check if theres a response 
         if ($dbresponse){
-            //Store Session Variables
-            $_SESSION["username"] = $dbresponse["username"];
-            $_SESSION["logged_in"] = true;
             //echo the JSON to the front end
             echo json_encode([
                 "success" => true,

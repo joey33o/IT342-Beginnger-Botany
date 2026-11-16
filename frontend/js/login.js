@@ -2,7 +2,7 @@
 
 // Our server's web address. 
 // NOTE: Leave it empty for "demo mode", which skips the server so we can test.
-const API_BASE = "";
+const API_BASE = "/";
 
 // Grab the page parts we'll use, by the ids set in login.html.
 const loginForm = document.getElementById("loginForm");
@@ -76,9 +76,10 @@ loginForm.addEventListener("submit", async (event) => {
     try {
         // Send the login to the server (skipped in demo mode); if it's right, the server emails the code.
         if (API_BASE) {
-            const response = await fetch(API_BASE + "/html/loginBACK.html", {
+            const response = await fetch(API_BASE + "html/loginBACK.html", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include", // Ensures PHPSESSID cookie is saved
                 body: JSON.stringify({ username, password })
             });
             // Same message for a wrong username or password, so nobody can tell which usernames exist.
