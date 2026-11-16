@@ -1,0 +1,15 @@
+.content-banner { background: var(--verdant-100); padding: 2.5rem 1.25rem; text-align: center; }
+.content-banner p { margin-bottom: 0; }
+.content-banner h1, .content-container h2 { color: var(--verdant-900); }
+.content-container { max-width: 900px; margin: 1.875rem auto; padding: 0 1.25rem; }
+.content-container .section, .content-container .post {
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+}
+.content-container img { width: 100%; object-fit: cover; border-radius: 10px; margin-bottom: 1rem; }
+.content-container .post img { max-height: 250px; }
+.content-container .plants { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.content-container .plant { flex: 1 1 180px; min-width: 0; text-align: center; }
+.content-container .plant img { height: 180px; }
