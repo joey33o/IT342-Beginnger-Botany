@@ -66,6 +66,8 @@ elseif($_SERVER["REQUEST_METHOD"] === "POST") {
 
         //check if the CLEAN Json is there
         if ($validUserJSON){
+                // Stop and return a 409 JSON error if the username already exists
+                checkUsernameExists($pdo, $validUserJSON["username"]);
                 //call the function to make PDO request
                 $dbresponse = attemptRegister($pdo, $validUserJSON);
 
@@ -232,6 +234,21 @@ function serverReturn($dbresponse){
                 echo json_encode($badRequest);
                 exit;
         }
+}
+
+//check if the username already exists
+function checkUsernameExists($pdo, $username) {
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE username = :username LIMIT 1");
+    $stmt->execute([":username" => $username]);
+
+    if ($stmt->fetch(PDO::FETCH_ASSOC)) {
+        http_response_code(409); // 409 Conflict
+        echo json_encode([
+            "success" => false,
+            "message" => "That username is already taken. Please choose another."
+        ]);
+        exit();
+    }
 }
 
 ?>
