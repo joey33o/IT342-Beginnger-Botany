@@ -7,6 +7,7 @@ window.authReady.then(function (username) {
         // Example: display username somewhere else.
         document.getElementById("customName").textContent = username + "'s Local Garden Weather";
 
+
     }else{
         window.location.replace("/html/home.html");
     }

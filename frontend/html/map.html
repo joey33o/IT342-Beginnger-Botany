@@ -22,7 +22,7 @@
     <a class="visually-hidden-focusable skip-link" href="#main">Skip to main content</a>
 
     <!-- ===== TOP MENU: <header> and <nav> let screen readers find or skip the menu ===== -->
-    <header>
+    <header id="loggedInNAVBAR">
         <nav class="navbar navbar-expand-md navbar-dark navbar-verdant" aria-label="Main">
             <!-- The <div>s here are only for Bootstrap's layout; they mean nothing to screen readers. -->
             <div class="container">
@@ -38,7 +38,6 @@
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="map.html">Weather Map</a></li>
                         <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
                         <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
-                        <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
                         <li class="nav-item ms-2">
                             <a class="btn btn-danger text-white" href="/logout.php">
                                 Logout
@@ -49,7 +48,7 @@
             </div>
         </nav>
     </header>
-
+    
     <main id="main" class="container py-4 py-lg-5">
 
         <!-- ===== PAGE TITLE + "LOCAL ZONE" SEARCH BAR ===== -->
