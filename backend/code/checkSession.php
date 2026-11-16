@@ -4,7 +4,7 @@ session_start();
 
 header("Content-Type: application/json");
 
-if (isset($_SESSION["user_id"])) {
+if (isset($_SESSION["logged_in"])) {
 
     echo json_encode([
         "loggedIn" => true,
