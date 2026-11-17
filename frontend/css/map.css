@@ -272,11 +272,6 @@
     display: block;
 }
 
-/* Shaded area under the line. */
-.chart-area {
-    fill: var(--verdant-100);
-}
-
 /* The line itself. */
 .chart-line {
     fill: none;
@@ -409,4 +404,12 @@
     background-color: var(--verdant-50);
     border-radius: 0.5rem;
     padding: 0.5rem 0.75rem;
+}
+
+/* Real plant photo from Perenual. */
+.plant-photo {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 0.5rem;
 }

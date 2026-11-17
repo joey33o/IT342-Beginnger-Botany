@@ -1,141 +1,180 @@
 // ===== LOGIN PAGE: step 1 is username + password, step 2 is the 6-digit email code =====
 
-// Our server's web address. 
+// Our server's web address.
 // NOTE: Leave it empty for "demo mode", which skips the server so we can test.
 const API_BASE = "";
 
-// Grab the page parts we'll use, by the ids set in login.html.
+// Username rule: 3 to 30 letters, numbers, _ or .
+const usernamePattern = /^[A-Za-z0-9_.]{3,30}$/;
+
+// Grab the page parts we use.
 const loginForm = document.getElementById("loginForm");
 const codeForm = document.getElementById("codeForm");
+const usernameBox = document.getElementById("username");
+const passwordBox = document.getElementById("password");
+const codeBox = document.getElementById("code");
+const showButton = document.getElementById("togglePassword");
+const loginButton = document.getElementById("loginBtn");
+const codeButton = document.getElementById("codeBtn");
 const loginError = document.getElementById("loginError");
 const codeError = document.getElementById("codeError");
-
-// A valid username: 3–30 letters, numbers, _ or . (the server must check this too).
-const USERNAME_RULE = /^[A-Za-z0-9_.]{3,30}$/;
 
 
 // ===== Helpers =====
 
-// Turns a box's red outline and error message on or off, and tells screen readers about it.
-function markField(input, isValid, errorId, message) {
-    input.classList.toggle("is-invalid", !isValid);
-    input.setAttribute("aria-invalid", String(!isValid));
-    document.getElementById(errorId).textContent = isValid ? "" : message;
+// Turns a box red with a message, or clears it.
+function markBox(box, errorId, message) {
+    const errorText = document.getElementById(errorId);
+    errorText.textContent = message;
+    if (message === "") {
+        box.classList.remove("is-invalid");
+        box.setAttribute("aria-invalid", "false");
+    } else {
+        box.classList.add("is-invalid");
+        box.setAttribute("aria-invalid", "true");
+    }
 }
 
-// Shows a red alert as plain text (so it can't run as code), or hides it if the message is empty.
-function showError(box, message) {
-    box.textContent = message;
-    box.classList.toggle("d-none", !message);
-}
-
-// Greys out a button while we wait, so it can't be clicked twice.
-function setBusy(button, busy, busyText, normalText) {
-    button.disabled = busy;
-    button.textContent = busy ? busyText : normalText;
+// Shows a red alert box with a message, or hides it when the message is empty.
+function showAlert(alertBox, message) {
+    alertBox.textContent = message;
+    if (message === "") {
+        alertBox.classList.add("d-none");
+    } else {
+        alertBox.classList.remove("d-none");
+    }
 }
 
 
 // ===== Show / hide password button =====
-const passwordInput = document.getElementById("password");
-const toggleButton = document.getElementById("togglePassword");
-
-toggleButton.addEventListener("click", () => {
-    const hidden = passwordInput.type === "password"; // are we showing dots right now?
-    passwordInput.type = hidden ? "text" : "password";
-    toggleButton.textContent = hidden ? "Hide" : "Show";
-    toggleButton.setAttribute("aria-label", hidden ? "Hide password" : "Show password");
+showButton.addEventListener("click", function () {
+    if (passwordBox.type === "password") {
+        passwordBox.type = "text";
+        showButton.textContent = "Hide";
+        showButton.setAttribute("aria-label", "Hide password");
+    } else {
+        passwordBox.type = "password";
+        showButton.textContent = "Show";
+        showButton.setAttribute("aria-label", "Show password");
+    }
 });
 
 
 // ===== Step 1: username + password (runs when "Log In" is clicked) =====
-loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault(); // stop the page from reloading; we handle it here
-    showError(loginError, "");
+loginForm.addEventListener("submit", async function (event) {
+    event.preventDefault(); // stop the page from reloading
+    showAlert(loginError, "");
 
-    // Read the boxes (extra spaces trimmed from the username, password left as typed).
-    const usernameInput = loginForm.username;
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
+    const username = usernameBox.value.trim();
+    const password = passwordBox.value;
 
-    // Check both boxes and mark any problems.
-    const usernameOk = USERNAME_RULE.test(username);
-    const passwordOk = password.length > 0;
-    markField(usernameInput, usernameOk, "usernameError", "Enter your username (letters, numbers, _ or . only).");
-    markField(passwordInput, passwordOk, "passwordError", "Enter your password.");
+    // Check the username.
+    let usernameOk = usernamePattern.test(username);
+    if (usernameOk) {
+        markBox(usernameBox, "usernameError", "");
+    } else {
+        markBox(usernameBox, "usernameError", "Enter your username (letters, numbers, _ or . only).");
+    }
+
+    // Check the password isn't empty.
+    let passwordOk = password !== "";
+    if (passwordOk) {
+        markBox(passwordBox, "passwordError", "");
+    } else {
+        markBox(passwordBox, "passwordError", "Enter your password.");
+    }
 
     // If something's wrong, put the cursor in the first bad box and stop.
-    if (!usernameOk || !passwordOk) {
-        (usernameOk ? passwordInput : usernameInput).focus();
+    if (!usernameOk) {
+        usernameBox.focus();
+        return;
+    }
+    if (!passwordOk) {
+        passwordBox.focus();
         return;
     }
 
-    const button = document.getElementById("loginBtn");
-    setBusy(button, true, "Checking...", "Log In");
+    // Grey out the button while we wait.
+    loginButton.disabled = true;
+    loginButton.textContent = "Checking...";
 
     try {
-        // Send the login to the server (skipped in demo mode); if it's right, the server emails the code.
-        if (API_BASE) {
+        // Send the login to the server as JSON (skipped in demo mode); if it's right, the server emails the code.
+        if (API_BASE !== "") {
             const response = await fetch(API_BASE + "/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ username: username, password: password })
             });
-            // Same message for a wrong username or password, so nobody can tell which usernames exist.
-            if (!response.ok) throw new Error("Wrong username or password.");
+
+            // Same message for a wrong username or password, so nobody can guess which usernames exist.
+            if (!response.ok) {
+                showAlert(loginError, "Wrong username or password.");
+                loginButton.disabled = false;
+                loginButton.textContent = "Log In";
+                return;
+            }
         }
 
-        // It worked: swap step 1 for step 2 and put the cursor in the code box.
+        // It worked: hide step 1, show step 2.
         loginForm.classList.add("d-none");
         codeForm.classList.remove("d-none");
-        codeForm.code.focus();
-    } catch (err) {
-        showError(loginError, err.message || "Something went wrong. Please try again.");
-    } finally {
-        setBusy(button, false, "", "Log In"); // make the button clickable again either way
+        codeBox.focus();
+    } catch (error) {
+        showAlert(loginError, "Something went wrong. Please try again.");
     }
+
+    loginButton.disabled = false;
+    loginButton.textContent = "Log In";
 });
 
 
 // ===== Step 2: the 6-digit email code =====
-const codeInput = document.getElementById("code");
 
-// Quietly removes anything that isn't a number as they type.
-codeInput.addEventListener("input", () => {
-    codeInput.value = codeInput.value.replace(/\D/g, "");
+// Removes anything that isn't a number as they type.
+codeBox.addEventListener("input", function () {
+    codeBox.value = codeBox.value.replace(/\D/g, "");
 });
 
 // Runs when "Verify" is clicked.
-codeForm.addEventListener("submit", async (event) => {
+codeForm.addEventListener("submit", async function (event) {
     event.preventDefault();
-    showError(codeError, "");
+    showAlert(codeError, "");
 
     // The code has to be exactly 6 numbers.
-    const code = codeInput.value.trim();
-    const codeOk = /^\d{6}$/.test(code);
-    markField(codeInput, codeOk, "codeInvalid", "The code is 6 numbers.");
-    if (!codeOk) {
-        codeInput.focus();
+    const code = codeBox.value.trim();
+    if (!/^\d{6}$/.test(code)) {
+        markBox(codeBox, "codeInvalid", "The code is 6 numbers.");
+        codeBox.focus();
         return;
     }
+    markBox(codeBox, "codeInvalid", "");
 
-    const button = document.getElementById("codeBtn");
-    setBusy(button, true, "Verifying...", "Verify");
+    codeButton.disabled = true;
+    codeButton.textContent = "Verifying...";
 
     try {
         // Ask the server if the code matches the one it emailed (skipped in demo mode).
-        if (API_BASE) {
+        if (API_BASE !== "") {
             const response = await fetch(API_BASE + "/auth/verify", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: loginForm.username.value.trim(), code })
+                body: JSON.stringify({ username: usernameBox.value.trim(), code: code })
             });
-            if (!response.ok) throw new Error("That code didn't work. Check your email and try again.");
+
+            if (!response.ok) {
+                showAlert(codeError, "That code didn't work. Check your email and try again.");
+                codeButton.disabled = false;
+                codeButton.textContent = "Verify";
+                return;
+            }
         }
 
-        window.location.href = "index.html"; // code accepted: off to the home page
-    } catch (err) {
-        showError(codeError, err.message);
-        setBusy(button, false, "", "Verify");
+        // Code accepted: go to the home page.
+        window.location.href = "home.html";
+    } catch (error) {
+        showAlert(codeError, "Something went wrong. Please try again.");
+        codeButton.disabled = false;
+        codeButton.textContent = "Verify";
     }
 });

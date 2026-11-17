@@ -1,51 +1,100 @@
 // ===== REGISTER PAGE: checks every box, then sends the new account to our server =====
 
-// Our server's web address. Leave it empty for "demo mode", which pretends sign-up worked so we can test.
+// Our server's web address.
+// NOTE: Leave it empty for "demo mode", which pretends sign-up worked so we can test.
 const API_BASE = "";
 
-// Grab the page parts we'll use.
+// The rules for each box.
+const usernamePattern = /^[A-Za-z0-9_.]{3,30}$/;        // 3 to 30 letters, numbers, _ or .
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;  // something@something.something
+const zipPattern = /^\d{5}$/;                           // exactly 5 numbers
+
+// Grab the page parts we use.
 const form = document.getElementById("registerForm");
+const usernameBox = document.getElementById("username");
+const emailBox = document.getElementById("email");
+const passwordBox = document.getElementById("password");
+const confirmBox = document.getElementById("confirm");
+const zipBox = document.getElementById("zip");
+const showButton = document.getElementById("togglePassword");
+const registerButton = document.getElementById("registerBtn");
 const formMessage = document.getElementById("formMessage");
-const passwordInput = document.getElementById("password");
 
-// Password rules, used both to check the password and to tick off the checklist.
-const passwordRules = {
-    length: (v) => v.length >= 8,        // 8 or more characters
-    letter: (v) => /[A-Za-z]/.test(v),   // at least one letter
-    number: (v) => /\d/.test(v)          // at least one number
-};
-
-// One check per box: gives back an error message, or "" if it's fine (the server must re-check these).
-const checks = {
-    username: (v) => /^[A-Za-z0-9_.]{3,30}$/.test(v)                      // 3–30 letters, numbers, _ or .
-        ? "" : "Use 3–30 letters, numbers, _ or . (no spaces).",
-    email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)                 // roughly something@something.something
-        ? "" : "Enter a valid email address.",
-    password: (v) => Object.values(passwordRules).every((rule) => rule(v)) // passes every password rule
-        ? "" : "Your password doesn't meet all the rules below.",
-    confirm: (v) => v !== "" && v === passwordInput.value                  // matches the first password box
-        ? "" : "Passwords don't match.",
-    zip: (v) => /^\d{5}$/.test(v)                                          // exactly 5 numbers
-        ? "" : "Enter a 5-digit US ZIP code."
-};
+// Becomes true after the first "Create Account" click; then boxes re-check as you type.
+let triedSubmit = false;
 
 
 // ===== Helpers =====
 
-// Gets what's typed in a box, trimming extra spaces (except in password boxes, where spaces count).
-function valueOf(name) {
-    const raw = form[name].value;
-    return name === "password" || name === "confirm" ? raw : raw.trim();
+// Password needs 8+ characters, a letter and a number.
+function passwordIsGood(value) {
+    return value.length >= 8 && /[A-Za-z]/.test(value) && /\d/.test(value);
 }
 
-// Checks one box, shows red or green plus a plain-text message, and gives back true if it's fine.
-function checkField(name) {
-    const message = checks[name](valueOf(name));
-    document.getElementById(name + "Error").textContent = message;
-    form[name].classList.toggle("is-invalid", message !== "");
-    form[name].classList.toggle("is-valid", message === "");
-    form[name].setAttribute("aria-invalid", String(message !== ""));
-    return message === "";
+// Turns a box red with a message, or green when the message is empty.
+function markBox(box, errorId, message) {
+    document.getElementById(errorId).textContent = message;
+    if (message === "") {
+        box.classList.remove("is-invalid");
+        box.classList.add("is-valid");
+        box.setAttribute("aria-invalid", "false");
+    } else {
+        box.classList.remove("is-valid");
+        box.classList.add("is-invalid");
+        box.setAttribute("aria-invalid", "true");
+    }
+}
+
+// Checks every box, shows any problems, and gives back true if they're all fine.
+function checkAllBoxes() {
+    let allGood = true;
+
+    if (usernamePattern.test(usernameBox.value.trim())) {
+        markBox(usernameBox, "usernameError", "");
+    } else {
+        markBox(usernameBox, "usernameError", "Use 3–30 letters, numbers, _ or . (no spaces).");
+        allGood = false;
+    }
+
+    if (emailPattern.test(emailBox.value.trim())) {
+        markBox(emailBox, "emailError", "");
+    } else {
+        markBox(emailBox, "emailError", "Enter a valid email address.");
+        allGood = false;
+    }
+
+    if (passwordIsGood(passwordBox.value)) {
+        markBox(passwordBox, "passwordError", "");
+    } else {
+        markBox(passwordBox, "passwordError", "Your password doesn't meet all the rules below.");
+        allGood = false;
+    }
+
+    if (confirmBox.value !== "" && confirmBox.value === passwordBox.value) {
+        markBox(confirmBox, "confirmError", "");
+    } else {
+        markBox(confirmBox, "confirmError", "Passwords don't match.");
+        allGood = false;
+    }
+
+    if (zipPattern.test(zipBox.value.trim())) {
+        markBox(zipBox, "zipError", "");
+    } else {
+        markBox(zipBox, "zipError", "Enter a 5-digit US ZIP code.");
+        allGood = false;
+    }
+
+    return allGood;
+}
+
+// Turns one checklist line green (met) or grey (not met).
+function markRule(rule, isMet) {
+    const line = document.querySelector('#passwordRules li[data-rule="' + rule + '"]');
+    if (isMet) {
+        line.classList.add("met");
+    } else {
+        line.classList.remove("met");
+    }
 }
 
 // Shows the message box under the form; type is "success" (green) or "danger" (red).
@@ -55,89 +104,101 @@ function showMessage(text, type) {
 }
 
 
-// ===== Live re-checking: starts after the first "Create Account" click, so we don't nag mid-typing =====
-let triedSubmit = false;
-
-Object.keys(checks).forEach((name) => {
-    form[name].addEventListener("input", () => {
-        if (triedSubmit) checkField(name);
-    });
+// ===== Re-check as they type, but only after the first "Create Account" click =====
+form.addEventListener("input", function () {
+    if (triedSubmit) {
+        checkAllBoxes();
+    }
 });
 
 
-// ===== Password checklist: turns each rule green as the password meets it =====
-passwordInput.addEventListener("input", () => {
-    const value = passwordInput.value;
-    document.querySelectorAll("#passwordRules li").forEach((item) => {
-        item.classList.toggle("met", passwordRules[item.dataset.rule](value)); // data-rule says which rule this line is
-    });
-    if (triedSubmit) checkField("confirm"); // re-check the match if they edit the password
+// ===== Password checklist: each rule turns green as the password meets it =====
+passwordBox.addEventListener("input", function () {
+    const value = passwordBox.value;
+    markRule("length", value.length >= 8);
+    markRule("letter", /[A-Za-z]/.test(value));
+    markRule("number", /\d/.test(value));
 });
 
 
-// ===== ZIP box: quietly removes anything that isn't a number =====
-form.zip.addEventListener("input", () => {
-    form.zip.value = form.zip.value.replace(/\D/g, "");
+// ===== ZIP box: removes anything that isn't a number =====
+zipBox.addEventListener("input", function () {
+    zipBox.value = zipBox.value.replace(/\D/g, "");
 });
 
 
-// ===== Show / hide password button (switches both password boxes) =====
-const toggleButton = document.getElementById("togglePassword");
-
-toggleButton.addEventListener("click", () => {
-    const hidden = passwordInput.type === "password"; // are we showing dots right now?
-    passwordInput.type = hidden ? "text" : "password";
-    form.confirm.type = passwordInput.type;           // keep both boxes the same
-    toggleButton.textContent = hidden ? "Hide" : "Show";
-    toggleButton.setAttribute("aria-label", hidden ? "Hide password" : "Show password");
+// ===== Show / hide password button (changes both password boxes) =====
+showButton.addEventListener("click", function () {
+    if (passwordBox.type === "password") {
+        passwordBox.type = "text";
+        confirmBox.type = "text";
+        showButton.textContent = "Hide";
+        showButton.setAttribute("aria-label", "Hide password");
+    } else {
+        passwordBox.type = "password";
+        confirmBox.type = "password";
+        showButton.textContent = "Show";
+        showButton.setAttribute("aria-label", "Show password");
+    }
 });
 
 
 // ===== Create Account (runs when the button is clicked) =====
-form.addEventListener("submit", async (event) => {
-    event.preventDefault(); // stop the page from reloading; we handle it here
+form.addEventListener("submit", async function (event) {
+    event.preventDefault(); // stop the page from reloading
     formMessage.classList.add("d-none");
     triedSubmit = true;
 
-    // Check every box so all problems show at once; if any failed, jump to the first one.
-    const results = Object.keys(checks).map(checkField);
-    if (results.includes(false)) {
+    // If any box is wrong, put the cursor in the first bad one and stop.
+    if (!checkAllBoxes()) {
         form.querySelector(".is-invalid").focus();
         return;
     }
 
-    // Grey out the button while we wait, so it can't be clicked twice.
-    const button = document.getElementById("registerBtn");
-    button.disabled = true;
-    button.textContent = "Creating account...";
+    // Grey out the button while we wait.
+    registerButton.disabled = true;
+    registerButton.textContent = "Creating account...";
 
-    // The new account's details ("confirm password" isn't sent; it was only there to catch typos).
+    // The new account ("confirm password" isn't sent; it only catches typos).
     const newUser = {
-        username: valueOf("username"),
-        email: valueOf("email"),
-        password: valueOf("password"), // the server scrambles this before saving; it's never stored as typed
-        zip: valueOf("zip")
+        username: usernameBox.value.trim(),
+        email: emailBox.value.trim(),
+        password: passwordBox.value,
+        zip: zipBox.value.trim()
     };
 
     try {
-        // Send it to the server (skipped in demo mode); 409 means "that already exists".
-        if (API_BASE) {
+        // Send it to the server as JSON (skipped in demo mode).
+        if (API_BASE !== "") {
             const response = await fetch(API_BASE + "/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newUser)
             });
-            if (response.status === 409) throw new Error("That username or email is already taken.");
-            if (!response.ok) throw new Error("We couldn't create your account. Please try again.");
+
+            // 409 means the username or email is already used.
+            if (response.status === 409) {
+                showMessage("That username or email is already taken.", "danger");
+                registerButton.disabled = false;
+                registerButton.textContent = "Create Account";
+                return;
+            }
+            if (!response.ok) {
+                showMessage("We couldn't create your account. Please try again.", "danger");
+                registerButton.disabled = false;
+                registerButton.textContent = "Create Account";
+                return;
+            }
         }
 
         // It worked: show a green message, then go to the login page after 1.5 seconds.
         showMessage("Account created! Taking you to the login page...", "success");
-        setTimeout(() => { window.location.href = "login.html"; }, 1500);
-    } catch (err) {
-        // It didn't work: show why and let them try again.
-        showMessage(err.message, "danger");
-        button.disabled = false;
-        button.textContent = "Create Account";
+        setTimeout(function () {
+            window.location.href = "login.html";
+        }, 1500);
+    } catch (error) {
+        showMessage("Something went wrong. Please try again.", "danger");
+        registerButton.disabled = false;
+        registerButton.textContent = "Create Account";
     }
 });

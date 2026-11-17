@@ -136,6 +136,8 @@
                                 <!-- View 2: one plant's details, hidden until a plant is clicked. -->
                                 <article id="plantDetailView" hidden aria-labelledby="plantName">
                                     <button type="button" class="btn btn-sm btn-outline-primary mb-3" id="plantBack">← Back to plants</button>
+                                    <!-- A real photo from Perenual, hidden until one loads. -->
+                                    <img class="plant-photo mb-3" id="plantPhoto" alt="" hidden>
                                     <header class="text-center mb-3">
                                         <span class="plant-emoji" id="plantEmoji" aria-hidden="true"></span>
                                         <h3 class="h5 fw-bold mb-0" id="plantName" tabindex="-1"></h3>
@@ -144,6 +146,7 @@
                                     </header>
                                     <dl class="plant-facts small mb-3" id="plantFacts"></dl>
                                     <p class="plant-tip small mb-0" id="plantTip"></p>
+                                    <p class="small text-muted mt-2 mb-0" id="plantSource" role="status"></p>
                                 </article>
 
                             </div>
@@ -218,6 +221,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
             crossorigin="anonymous"></script>
+    <!-- keys.js holds the Perenual API key; it stays on your computer and is never uploaded to GitHub. -->
+    <script src="../js/keys.js"></script>
     <script src="../js/map.js"></script>
 </body>
 </html>
