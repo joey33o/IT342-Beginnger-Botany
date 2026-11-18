@@ -1,3 +1,23 @@
+window.authReady.then(function (username) {
+
+    if (username) {
+
+        console.log("Logged in as: " + username);
+
+        // Example: display username somewhere else.
+        document.getElementById("customName").textContent = username + "'s Local Garden Weather";
+
+
+    }else{
+        window.location.replace("/html/home.html");
+    }
+
+    //we need to make it so that the home page is not accessable by people unless the user is logged in
+    //here is where we will also check if a variabele is set and decide which navbar should be used
+
+});
+
+
 // ===== WEATHER MAP PAGE: sample data for now; the real weather and plant info come from our server later =====
 
 // Sample plants that grow well in Zone 7a; the plant service will supply this list later.
