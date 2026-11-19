@@ -14,5 +14,9 @@ ProxyPassReverse /html/registerBACK.html http://192.168.62.10/registerBACK.php
 ProxyPass /logout.php http://192.168.62.10/logout.php
 ProxyPassReverse /logout.php http://192.168.62.10/logout.php
 
+ProxyPass /plantAPI http://192.168.62.10/plantAPI.php
+ProxyPassReverse /plantAPI http://192.168.62.10/plantAPI.php
+
+
 
 </VirtualHost>
