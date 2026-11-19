@@ -55,6 +55,31 @@ function make(tag, className, text) {
 
 }
 
+function showLoading() {
+    plantList.replaceChildren();
+
+    const item = make("li", "loading-item", "");
+
+    const spinner = make("div", "loading-spinner", "");
+
+    const message = make(
+        "p",
+        "text-muted",
+        "Finding plants for your growing zone..."
+    );
+
+    item.append(spinner, message);
+    plantList.appendChild(item);
+}
+
+//function for helping showerror
+function showPlantError(message) {
+    plantList.replaceChildren();
+
+    plantList.appendChild(
+        make("li", "text-muted", message)
+    );
+}
 
 // Capitalizes first letter
 function capitalize(text) {
@@ -104,7 +129,6 @@ function showSearchMessage(text, isError) {
 
 // Populates the plant list using PHP response data
 function drawPlantList(plants) {
-
     plantList.innerHTML = "";
 
     if (!plants || plants.length === 0) {
@@ -392,6 +416,8 @@ searchForm.addEventListener("submit", async function (event) {
 
     }
 
+    //clear old plants and show the loading spinner 
+    showLoading();
 
     showSearchMessage("Looking up ZIP " + zip + "...", false);
 
@@ -421,14 +447,17 @@ searchForm.addEventListener("submit", async function (event) {
         // Handle backend errors
         if (!response.ok || data.status !== "success") {
 
-            showSearchMessage(
-                data.message || "Unable to retrieve plant information.",
-                true
-            );
+        showPlantError(
+            data.message || "Unable to retrieve plant information."
+        );
 
-            return;
+        showSearchMessage(
+            data.message || "Unable to retrieve plant information.",
+            true
+        );
 
-        }
+        return;
+}
 
 
         // Populate page using returned data
@@ -458,12 +487,14 @@ searchForm.addEventListener("submit", async function (event) {
 
     } catch (error) {
 
-        console.error("Plant API Error:", error);
+    console.error("Plant API Error:", error);
 
-        showSearchMessage(
-            "Something went wrong. Please try again.",
-            true
-        );
+    showPlantError("Something went wrong. Please try again.");
+
+    showSearchMessage(
+        "Something went wrong. Please try again.",
+        true
+    );
 
     }
 
