@@ -258,3 +258,13 @@ input[type="text"]:focus {
 .btn-secondary:hover {
   background-color: #cbd5e1;
 }
+
+.btn.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn.btn-danger:hover {
+  background-color: #bb2d3b;
+  border-color: #b02a37;
+}

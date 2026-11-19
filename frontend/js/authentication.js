@@ -14,6 +14,9 @@ window.authReady = (async function () {
         const response = await fetch("/html/checkSession.html");
 
         if (!response.ok) {
+             //set proper navbar
+            document.getElementById("loggedInNAVBAR").style.display = "none";
+            document.getElementById("loggedOutNAVBAR").style.display = "block";
             return null;
         }
 
@@ -23,9 +26,10 @@ window.authReady = (async function () {
 
             window.currentUser = data.username;
 
-            // Update navbar.
-            document.getElementById("guestLinks")?.classList.add("d-none");
-            document.getElementById("userLinks")?.classList.remove("d-none");
+            //set proper navbar
+            document.getElementById("loggedInNAVBAR").style.display = "block";
+            document.getElementById("loggedOutNAVBAR").style.display = "none";
+
 
             // Display username.
             const usernameDisplay = document.getElementById("welcomeUser");
@@ -42,6 +46,9 @@ window.authReady = (async function () {
     } catch (error) {
 
         console.error("Session check failed:", error);
+            //set proper navbar
+        document.getElementById("loggedInNAVBAR").style.display = "none";
+        document.getElementById("loggedOutNAVBAR").style.display = "block";
         return null;
 
     }

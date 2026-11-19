@@ -30,10 +30,36 @@
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><a class="nav-link" href="home.html">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="map.html">Weather Map</a></li>
                         <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
                         <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
                         <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <header id="loggedInNAVBAR">
+        <nav class="navbar navbar-expand-md navbar-dark navbar-verdant" aria-label="Main">
+            <!-- The <div>s here are only for Bootstrap's layout; they mean nothing to screen readers. -->
+            <div class="container">
+                <a class="navbar-brand" href="home.html">🌱 Beginner Botany</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#mainNav" aria-controls="mainNav"
+                        aria-expanded="false" aria-label="Open menu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="home.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="map.html">Weather Map</a></li>
+                        <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
+                        <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
+                        <li class="nav-item ms-2">
+                            <a class="btn btn-danger text-white" href="/logout.php">
+                                Logout
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -110,12 +136,12 @@
       <!-- Section 4: Article Section -->
 
       <!-- User Box -->
-      <div class="containerR">
+      <div id="loggedInUserBox" class="containerR">
         <section class="card profile-section">
           <div class="profile-card">
             <div class="avatar-placeholder"></div>
             <div class="user-info">
-              <h3>Username</h3>
+              <h3 id="loggedUsername" >Username</h3>
               <p><strong>Home State:</strong> place holder</p>
             </div>
             <button class="btn" id="blogbtn">Personal Blog Page</button>
@@ -149,6 +175,7 @@
       </div>
     </main>
 
+    <script src="../js/authentication.js"></script>
     <script src="../js/home.js"></script>
   </body>
 </html>

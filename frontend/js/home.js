@@ -1,3 +1,23 @@
+window.authReady.then(function (username) {
+
+    if (username) {
+
+        console.log("Logged in as: " + username);
+
+       //get the user name displayed in box 
+      document.getElementById("loggedInUserBox").style.display = "block";
+
+      //set username
+      document.getElementById("loggedUsername").textContent = "Welcome: " + username;
+
+    } else {
+
+       document.getElementById("loggedInUserBox").style.display = "none";
+
+    }
+
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   const slides = document.querySelectorAll(".slide");
   const dots = document.querySelectorAll(".dot");

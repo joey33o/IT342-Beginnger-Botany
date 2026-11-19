@@ -1,3 +1,18 @@
+window.authReady.then(function (username) {
+
+    if (username) {
+
+        console.log("Logged in as: " + username);
+
+        document.getElementById("customName").textContent =
+            username + "'s Local Garden";
+
+    } else {
+
+    }
+
+});
+
 // ===== LOGIN PAGE: step 1 is username + password, step 2 is the 6-digit email code =====
 
 // Our server's web address. 

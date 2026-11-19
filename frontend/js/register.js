@@ -1,3 +1,18 @@
+window.authReady.then(function (username) {
+
+    if (username) {
+
+        console.log("Logged in as: " + username);
+
+        document.getElementById("customName").textContent =
+            username + "'s Local Garden";
+
+    } else {
+        
+    }
+
+});
+
 // ===== REGISTER PAGE: checks every box, then sends the new account to our server =====
 
 // Our server's web address. Leave it empty for "demo mode", which pretends sign-up worked so we can test.
