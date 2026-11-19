@@ -89,23 +89,28 @@ loginForm.addEventListener("submit", async (event) => {
     setBusy(button, true, "Checking...", "Log In");
 
     try {
-        // Send the login to the server (skipped in demo mode); if it's right, the server emails the code.
         if (API_BASE) {
             const response = await fetch(API_BASE + "html/loginBACK.html", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                credentials: "include", // Ensures PHPSESSID cookie is saved
+                credentials: "include",
                 body: JSON.stringify({ username, password })
             });
-            // Same message for a wrong username or password, so nobody can tell which usernames exist.
-            if (!response.ok) throw new Error("Wrong username or password.");
+
+            const data = await response.json();
+
+            if (!response.ok || data.success !== true) {
+                throw new Error("Wrong username or password.");
+            }
         }
-        
+
         window.location.href = "/html/map.html";
+
     } catch (err) {
         showError(loginError, err.message || "Something went wrong. Please try again.");
+
     } finally {
-        setBusy(button, false, "", "Log In"); // make the button clickable again either way
+        setBusy(button, false, "", "Log In");
     }
 });
 
