@@ -7,7 +7,10 @@ header("Content-Type: application/json");
 // CONFIGURATION
 // ==========================================
 
-$PERENUAL_KEY = "sk-yxgc6afbc5eeda49e20743";
+// Keep this file OUTSIDE the public web directory.
+// It should define $PERENUAL_KEY.
+require_once "/var/www/private/keys.php";
+
 
 // ==========================================
 // RESPONSE HELPER
@@ -200,6 +203,33 @@ function getPlants($zoneNumber, $apiKey) {
 
 
 // ==========================================
+// STEP 3: PLANT ID -> PLANT DETAILS
+// ==========================================
+
+function getPlantDetails($plantId, $apiKey) {
+
+    $parameters = [
+        "key" => $apiKey
+    ];
+
+    $url = "https://perenual.com/api/v2/species/details/"
+        . $plantId . "?"
+        . http_build_query($parameters);
+
+    $data = apiRequest($url);
+
+    if (!isset($data["id"])) {
+
+        throw new Exception("Plant details not found.");
+
+    }
+
+    return $data;
+
+}
+
+
+// ==========================================
 // MAIN REQUEST HANDLER
 // ==========================================
 
@@ -231,21 +261,6 @@ if (!is_array($request)) {
 }
 
 
-// Retrieve ZIP code.
-$zip = $request["zip"] ?? "";
-
-
-// Validate ZIP code.
-if (!preg_match("/^[0-9]{5}$/", $zip)) {
-
-    sendResponse(400, [
-        "status" => "error",
-        "message" => "Enter a valid 5-digit ZIP code."
-    ]);
-
-}
-
-
 // Validate API key.
 if (!isset($PERENUAL_KEY) || $PERENUAL_KEY === "") {
 
@@ -259,54 +274,126 @@ if (!isset($PERENUAL_KEY) || $PERENUAL_KEY === "") {
 }
 
 
+// Determine requested action.
+// If no action is provided, default to ZIP search.
+$action = $request["action"] ?? "search";
+
+
 // ==========================================
-// EXECUTE API CHAIN
+// ACTION 1: GET PLANT DETAILS
 // ==========================================
 
-try {
+if ($action === "details") {
 
-    // API CALL 1:
-    // Retrieve growing zone using ZIP code.
-    $zone = getGrowingZone($zip);
+    // Retrieve plant ID.
+    $plantId = filter_var(
+        $request["plantId"] ?? null,
+        FILTER_VALIDATE_INT
+    );
+
+    // Validate plant ID.
+    if ($plantId === false || $plantId === null || $plantId <= 0) {
+
+        sendResponse(400, [
+            "status" => "error",
+            "message" => "Invalid plant ID."
+        ]);
+
+    }
+
+    try {
+
+        // Retrieve details for the selected plant.
+        $plant = getPlantDetails($plantId, $PERENUAL_KEY);
+
+        // Return plant details to JavaScript.
+        sendResponse(200, [
+
+            "status" => "success",
+            "plant" => $plant
+
+        ]);
+
+    } catch (Exception $error) {
+
+        error_log("Plant Details Error: " . $error->getMessage());
+
+        sendResponse(502, [
+            "status" => "error",
+            "message" => "Unable to retrieve plant details."
+        ]);
+
+    }
+
+}
 
 
-    // Convert zone "7b" into integer 7.
-    $zoneNumber = (int)$zone;
+// ==========================================
+// ACTION 2: ZIP SEARCH
+// ==========================================
+
+elseif ($action === "search") {
+
+    // Retrieve ZIP code.
+    $zip = $request["zip"] ?? "";
+
+    // Validate ZIP code.
+    if (!preg_match("/^[0-9]{5}$/", $zip)) {
+
+        sendResponse(400, [
+            "status" => "error",
+            "message" => "Enter a valid 5-digit ZIP code."
+        ]);
+
+    }
+
+    try {
+
+        // API CALL 1:
+        // Retrieve growing zone using ZIP code.
+        $zone = getGrowingZone($zip);
+
+        // Convert zone "7b" into integer 7.
+        $zoneNumber = (int)$zone;
+
+        // API CALL 2:
+        // Retrieve plants using the growing zone.
+        // Internally performs three Perenual requests.
+        $plants = getPlants($zoneNumber, $PERENUAL_KEY);
+
+        // Return final response to JavaScript.
+        sendResponse(200, [
+
+            "status" => "success",
+            "zip" => $zip,
+            "zone" => $zone,
+            "plants" => $plants
+
+        ]);
+
+    } catch (Exception $error) {
+
+        error_log("Plant API Error: " . $error->getMessage());
+
+        sendResponse(502, [
+            "status" => "error",
+            "message" => "Unable to retrieve plant information. Please try again."
+        ]);
+
+    }
+
+}
 
 
-    // API CALL 2:
-    // Retrieve plants using the growing zone.
-    // Internally performs three Perenual requests.
-    $plants = getPlants($zoneNumber, $PERENUAL_KEY);
+// ==========================================
+// INVALID ACTION
+// ==========================================
 
+else {
 
-    // ======================================
-    // RETURN FINAL RESPONSE TO JAVASCRIPT
-    // ======================================
-
-    sendResponse(200, [
-
-        "status" => "success",
-
-        "zip" => $zip,
-
-        "zone" => $zone,
-
-        "plants" => $plants
-
-    ]);
-
-} catch (Exception $error) {
-
-    // Log actual error on server, not in the browser.
-    error_log("Plant API Error: " . $error->getMessage());
-
-    sendResponse(502, [
-
+    sendResponse(400, [
         "status" => "error",
-
-        "message" => "Unable to retrieve plant information. Please try again."
-
+        "message" => "Invalid API action."
     ]);
 
 }

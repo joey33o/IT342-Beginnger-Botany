@@ -64,6 +64,22 @@ function capitalize(text) {
 }
 
 
+function isRealInfo(value) {
+
+    if (!value) {
+        return false;
+    }
+
+    if (String(value).includes("Upgrade")) {
+        return false;
+    }
+
+    return true;
+
+}
+
+
+
 // Displays search messages
 function showSearchMessage(text, isError) {
 
@@ -195,6 +211,7 @@ async function showPlant(plant) {
     const source = document.getElementById("plantSource");
     const levelBadge = document.getElementById("plantLevel");
 
+    // First, show what we already have from the list.
     document.getElementById("plantName").textContent =
         capitalize(plant.common_name);
 
@@ -202,38 +219,132 @@ async function showPlant(plant) {
         plant.scientific_name[0];
 
     levelBadge.textContent = plant.level.name;
-
     levelBadge.className = "badge " + plant.level.className;
-
 
     photo.hidden = true;
 
     if (plant.default_image && plant.default_image.medium_url) {
 
         photo.src = plant.default_image.medium_url;
-
         photo.alt = "Photo of " + plant.common_name;
-
         photo.hidden = false;
 
     }
 
-
-    // No detail API request here yet.
-    // Plant details will need their own request to /plantAPI
-    // when that functionality is implemented.
-
     fillFacts([]);
 
-    source.textContent = "Plant details will be available soon.";
+    source.textContent = "Loading more details...";
 
     listView.hidden = true;
-
     detailView.hidden = false;
 
     document.getElementById("plantName").focus();
 
+    // Ask our PHP backend for the rest of the details.
+    try {
+
+        const response = await fetch("/plantAPI", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                action: "details",
+                plantId: plant.id
+            })
+
+        });
+
+        if (!response.ok) {
+
+            source.textContent =
+                "More details aren't available for this plant right now.";
+
+            return;
+
+        }
+
+        const data = await response.json();
+
+        if (data.status !== "success" || !data.plant) {
+
+            source.textContent =
+                "More details aren't available for this plant right now.";
+
+            return;
+
+        }
+
+        const details = data.plant;
+        const facts = [];
+
+        // ☀️ Sunlight
+        if (isRealInfo(details.sunlight)) {
+
+            facts.push(["☀️ Sun", details.sunlight.join(", ")]);
+
+        }
+
+        // 💧 Watering
+        if (isRealInfo(details.watering)) {
+
+            facts.push(["💧 Water", details.watering]);
+
+        }
+
+        // ✋ Care level
+        if (isRealInfo(details.care_level)) {
+
+            facts.push(["✋ Care", details.care_level]);
+
+        }
+
+        // 🔁 Life cycle
+        if (isRealInfo(details.cycle)) {
+
+            facts.push(["🔁 Cycle", details.cycle]);
+
+        }
+
+        // 🧺 Harvest season
+        if (isRealInfo(details.harvest_season)) {
+
+            facts.push(["🧺 Harvest", details.harvest_season]);
+
+        }
+
+        // 🗺️ Hardiness zones
+        if (
+            details.hardiness &&
+            isRealInfo(details.hardiness.min) &&
+            isRealInfo(details.hardiness.max)
+        ) {
+
+            facts.push([
+                "🗺️ Zones",
+                details.hardiness.min + " to " + details.hardiness.max
+            ]);
+
+        }
+
+        fillFacts(facts);
+
+        source.textContent = "Plant info from Perenual.";
+
+    } catch (error) {
+
+        console.error("Plant Details Error:", error);
+
+        source.textContent =
+            "Couldn't load more details. Please try again.";
+
+    }
+
 }
+
 
 
 // ===== BACK BUTTON =====
