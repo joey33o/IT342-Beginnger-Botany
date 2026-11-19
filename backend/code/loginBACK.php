@@ -1,70 +1,55 @@
 <?php
 
-//Get the connection file to connect to the databse
-require_once "connection.php";
+header("Content-Type: application/json");
 
-//Grab the raw data from the request body
-$rawInput = file_get_contents('php://input');
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    header("Allow: POST");
+    rejectLoginInput(405, "Send a POST request.");
+}
 
-//Set the session thing to start recording session variables from the client to php
+try {
+    $data = json_decode(file_get_contents("php://input"), true, 512, JSON_THROW_ON_ERROR);
+} catch (JsonException $error) {
+    rejectLoginInput(400, "Send valid JSON.");
+}
+
+$username = $data["username"] ?? null;
+$password = $data["password"] ?? null;
+
+// Match the login form: a valid username and any nonempty password.
+if (!is_string($username) || preg_match('/\A[A-Za-z0-9_.]{3,30}\z/', $username) !== 1) {
+    rejectLoginInput(400, "Use 3–30 letters, numbers, _ or . in your username.");
+}
+if (!is_string($password) || $password === "") {
+    rejectLoginInput(400, "Enter your password.");
+}
+
+require_once __DIR__ . "/connection.php";
 session_start();
 
-// 1) check if its POST first and then prepare a proper associateive array
-    //check for post request
-    if ($_SERVER["REQUEST_METHOD"] == "POST" ){
+$databaseInfo = attemptLogIn($pdo, [
+    "username" => $username,
+    "password" => $password,
+]);
 
-        $data = json_decode($rawInput, true, 512, JSON_THROW_ON_ERROR);
+if ($databaseInfo) {
+    $_SESSION["username"] = $databaseInfo["username"];
+    $_SESSION["logged_in"] = true;
+    echo json_encode([
+        "success" => true,
+        "message" => "Login successful",
+        "redirect" => "/html/map.html",
+    ]);
+} else {
+    echo json_encode(["success" => "Invalid Username or Password"]);
+}
 
-        //assign variables off of the JSON
-        $username = $data["username"];
-        $password = $data["password"];
-
-        //Get a proper array built for it
-        $arrayOrigin = [
-            "username" => $username,
-            "password" => $password
-        ];
-    };
-
-// 2) make pDO request to the database and check if it exists
-
-    // if ($arrayOrigin){
-    //     //Get the DB array
-    //     $cleanJSON = validateData($arrayOrigin);
-    // }
-    if ($arrayOrigin){
-        $databaseInfo = attemptLogIn($pdo, $arrayOrigin);
-        // $_SESSION["username"] = $databaseInfo["username"];
-        // $_SESSION["logged_in"] = true;
-        // header("Location: /html/map.php");
-    }
-    if ($databaseInfo){
-        //Store Session Variables
-        $_SESSION["username"] = $databaseInfo["username"];
-        $_SESSION["logged_in"] = true;
-        //echo the JSON to the front end
-        echo json_encode([
-            "success" => true,
-            "message" => "Login successful",
-            "redirect" => "/html/map.html"
-                ]);
-        exit();
-    } else {
-        $error = "Invalid Username or Password";
-        echo json_encode([
-            "success" => $error
-                ]);
-        exit();
-    }
-
-
-
-
-/*
-
-=================== FUNCTIONS USED =====================================================================
-
-*/
+function rejectLoginInput($status, $message)
+{
+    http_response_code($status);
+    echo json_encode(["success" => false, "message" => $message]);
+    exit;
+}
 
 //function for checking if user exists
 function attemptLogIn($pdo, $cleanJSON){
@@ -86,44 +71,3 @@ function attemptLogIn($pdo, $cleanJSON){
         }
 
 }
-
-//function for checking data validity
-function validateData($arrayOrigin){
-
-        //Define the regular expressions
-        $userRegex = '/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.(com|edu|org)$/';
-        $passwordRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#_+-])[A-Za-z\d@$!%*?&#_+-]{8,}$/';
-
-        //check the email
-        if (preg_match($userRegex, $arrayOrigin["username"]) === 0) {
-                //will send back code 406 for invalid data
-                http_response_code(406);
-                echo json_encode([
-                        'success' => false,
-                        'message' => "Invalid Email Input\nPlease enter a valid email ending in .com, .edu, or .org"
-                ]);
-                exit;
-        }
-
-        //check the password
-        if (preg_match($passwordRegex, $arrayOrigin["password"]) === 0) {
-                //will send back code 406 for invalid data
-                http_response_code(406);
-                echo json_encode([
-                        'success' => false,
-                        'message' => "InvalidPassword"
-                ]);
-                exit;
-        }
-
-        //set up return for clean values
-        $cleanJSON = [
-                "email" => $arrayOrigin["email"],
-                "password" => $arrayOrigin["password"]
-        ];
-
-        //return the clean JSON
-        return $cleanJSON;
-}
-
-?>

@@ -1,100 +1,83 @@
 <?php
-ini_set('pcre.jit', '0');
-//Tells PHP this will be a script expecting JSON instead of the default HTML
-header("content-Type: application/json");
 
-//require the database connection
-require_once "connection.php";
+ini_set("pcre.jit", "0");
+header("Content-Type: application/json");
 
-//initialize session
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    header("Allow: POST");
+    rejectRegistrationInput(405, "Send a POST request.");
+}
+
+try {
+    $data = json_decode(file_get_contents("php://input"), true, 512, JSON_THROW_ON_ERROR);
+} catch (JsonException $error) {
+    rejectRegistrationInput(400, "Send valid JSON.");
+}
+
+$username = $data["username"] ?? null;
+$email = $data["email"] ?? null;
+$password = $data["password"] ?? null;
+$zip = $data["zip"] ?? null;
+
+if (!is_string($username) || preg_match('/\A[A-Za-z0-9_.]{3,30}\z/', $username) !== 1) {
+    rejectRegistrationInput(400, "Use 3–30 letters, numbers, _ or . in your username.");
+}
+
+// Match JavaScript's whitespace characters and exclude @ inside each email part.
+$emailPart = '[^\p{Zs}\x{0009}-\x{000D}\x{2028}\x{2029}\x{FEFF}@]';
+// A single supplementary character counts as two in JavaScript.
+$emailSuffix = '(?:' . $emailPart . '{2,}|[\x{10000}-\x{10FFFF}])';
+$emailRegex = '/\A' . $emailPart . '+@' . $emailPart . '+\.' . $emailSuffix . '\z/u';
+if (!is_string($email) || preg_match($emailRegex, $email) !== 1) {
+    rejectRegistrationInput(400, "Enter a valid email address.");
+}
+
+if (!is_string($password) || !validRegistrationPassword($password)) {
+    rejectRegistrationInput(400, "Use at least 8 characters with a letter and a number.");
+}
+
+if (!is_string($zip) || preg_match('/\A[0-9]{5}\z/', $zip) !== 1) {
+    rejectRegistrationInput(400, "Enter a 5-digit US ZIP code.");
+}
+
+require_once __DIR__ . "/connection.php";
 session_start();
 
-//Grab the raw data from the request body
-$rawInput = file_get_contents('php://input');
+checkUsernameExists($pdo, $username);
+$dbresponse = attemptRegister($pdo, [
+    "username" => $username,
+    "email" => $email,
+    "password" => $password,
+    "zip" => $zip,
+]);
 
-//if not POST
-if($_SERVER["REQUEST_METHOD"] !== "POST") {
-        //405 says you made the connectiopn but you are using the wrong HTTP method
-        http_response_code(405);
+if ($dbresponse) {
+    echo json_encode([
+        "success" => true,
+        "message" => "Login successful",
+        "redirect" => "/html/map.html",
+    ]);
+} else {
+    echo json_encode(["success" => "No DB response from register"]);
 }
-elseif($_SERVER["REQUEST_METHOD"] === "POST") {
 
-// 1) Check if valid JSON input
+function validRegistrationPassword($password)
+{
+    // JavaScript counts UTF-16 units. Supplementary characters count twice.
+    $length = preg_match_all('/./us', $password)
+        + preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $password);
 
-        //turn the data into a PHP array
-        try{
-                //Check if something is wrong
-                $data = json_decode($rawInput, true, 512, JSON_THROW_ON_ERROR);
-
-                //assign variables off of the JSON
-                $user = $data["username"];
-                $email = $data["email"];
-                $password = $data["password"];
-                $zipcode = $data["zip"];
-
-                //prepare a valid JSON variable 
-                $validUserJSON = [
-                        "username" => $user,
-                        "email" => $email,
-                        "password" => $password,
-                        "zip" => $zipcode,
-                ];
-
-        } catch (JsonException $error){
-                //on an error give bad request code
-                http_response_code(452);
-
-                //build out the bad response json
-                $badRequest = [
-                        "message" => $error
-                ];
-
-                //send back error JSON
-                echo json_encode($badRequest);
-                exit;
-        }
+    return $length >= 8
+        && preg_match('/[A-Za-z]/', $password) === 1
+        && preg_match('/[0-9]/', $password) === 1;
 }
-// 2) Validate the data server wise
 
-        // //check if the JSOn is valid
-        // if ($validUserJSON){
-        //         //call the function to validate the data
-        //         $cleanJSON = validateData($validUserJSON);
-        // };
-
-// 3) Attempt to make the PDO request
-
-        //check if the CLEAN Json is there
-        if ($validUserJSON){
-                // Stop and return a 409 JSON error if the username already exists
-                checkUsernameExists($pdo, $validUserJSON["username"]);
-                //call the function to make PDO request
-                $dbresponse = attemptRegister($pdo, $validUserJSON);
-
-        }
-
-// 4) Return data to the user
-
-        //check if theres a response 
-        if ($dbresponse){
-            //echo the JSON to the front end
-            echo json_encode([
-                "success" => true,
-                "message" => "Login successful",
-                "redirect" => "/html/map.html"
-                    ]);
-            exit();
-        } else {
-            $error = "No DB response from register";
-            echo json_encode([
-                "success" => $error
-                    ]);
-            exit();
-        }
-        
-/*
---------------------------FUNCTIONS FOR THIS SCRIPT ----------------------------------------------------------------------------
-*/
+function rejectRegistrationInput($status, $message)
+{
+    http_response_code($status);
+    echo json_encode(["success" => false, "message" => $message]);
+    exit;
+}
 
 //PDO to register the USER
 function attemptRegister($pdo, $cleanJSON){
@@ -135,66 +118,6 @@ function attemptRegister($pdo, $cleanJSON){
                 error_log("Registration SQL error: " . $e->getMessage());
                 return false;
             }       
-}
-
-//function for checking data validity will EXIT if not valid
-function validateData($validUserJSON){
-    //Define the regular expressions
-    $emailRegex = '/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.(com|edu|org)$/';
-    $passwordRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#_+-])[A-Za-z\d@$!%*?&#_+-]{8,}$/';
-    $nameRegex = "/^[A-Za-z]+$/";
-
-    //check the first name
-    if (preg_match($nameRegex, $validUserJSON["firstname"]) === 0) {
-        //will send back code 406 for invalid data
-            http_response_code(406);
-            echo json_encode([
-                    'success' => false,
-                    'message' => "Invalid First Name"
-            ]);
-            exit;
-    }
-    //check the last name
-    if (preg_match($nameRegex, $validUserJSON["lastname"]) === 0) {
-            http_response_code(406);
-            echo json_encode([
-                    'success' => false,
-                    'message' => "Invalid Last Name"
-            ]);
-            exit;
-    }
-
-    //check the email
-    if (preg_match($emailRegex, $validUserJSON["email"]) === 0) {
-            //will send back code 406 for invalid data
-            http_response_code(406);
-            echo json_encode([
-                    'success' => false,
-                    'message' => "Invalid Email Input\nPlease enter a valid email ending in .com, .edu, or .org"
-            ]);
-            exit;
-    }
-
-    //check the password
-    if (preg_match($passwordRegex, $validUserJSON["password"]) === 0) {
-            //will send back code 406 for invalid data
-            http_response_code(406);
-            echo json_encode([
-                    'success' => false,
-                    'message' => "InvalidPassword"
-            ]);
-            exit;
-    }
-
-    //prepare clean JSON and send back
-    $cleanUserJSON = [
-                    "firstname" => $validUserJSON["firstname"],
-                    "lastname" => $validUserJSON["lastname"],
-                    "email" => $validUserJSON["email"],
-                    "password" => $validUserJSON["password"],
-                    "type" => $validUserJSON["type"]
-                ];
-    return $cleanUserJSON;
 }
 
 //function to grab user data to prepare to send it back to client
@@ -250,5 +173,3 @@ function checkUsernameExists($pdo, $username) {
         exit();
     }
 }
-
-?>
